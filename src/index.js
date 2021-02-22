@@ -21,19 +21,24 @@ const Carousel = React.forwardRef(
       setItems(i.reduce((a, b) => a + b, 0));
     }, [children]);
 
-    // TODO: figure out how to handle when toggling free from true -> false
+    React.useEffect(() => {
+      // reset to integer position when free is toggled off.
+      if (!free) setActive(Math.round);
+    }, [free]);
+
     const changePosition = React.useCallback(
       (v) => {
         setActive((a) =>
           revolve ? a + v : Math.max(0, Math.min(a + v, items - itemsPerSlide))
         );
       },
-      [itemsPerSlide, revolve, items]
+      [items, itemsPerSlide, revolve]
     );
 
     const { events, moveOffset, isMoving } = useEvents({
       changePosition,
       free,
+      itemsPerSlide,
     });
 
     const offset = active - moveOffset * itemsPerSlide;
@@ -113,7 +118,7 @@ Carousel.displayName = "Carousel";
 
 export default Carousel;
 
-function useEvents({ changePosition, free }) {
+function useEvents({ changePosition, free, itemsPerSlide }) {
   const [initPos, setInitPos] = React.useState();
   const [moveOffset, setMoveOffset] = React.useState(0);
 
@@ -148,7 +153,7 @@ function useEvents({ changePosition, free }) {
 
   const handleEnd = () => {
     if (free) {
-      changePosition(-moveOffset);
+      changePosition(-moveOffset * itemsPerSlide);
     } else if (Math.abs(moveOffset) > 0.3) {
       const i = Math.ceil(Math.abs(moveOffset)) * Math.sign(moveOffset);
       changePosition(-i);

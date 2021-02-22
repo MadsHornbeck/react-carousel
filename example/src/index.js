@@ -33,7 +33,9 @@ function Test() {
         gap={gap}
       >
         {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i}>{i}</div>
+          <div key={i}>
+            <div>{i}</div>
+          </div>
         ))}
       </Carousel>
       <button onClick={() => ref.current.prev()}>Prev</button>

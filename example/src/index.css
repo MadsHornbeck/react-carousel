@@ -72,6 +72,16 @@ button:hover {
 .inner > * {
   height: 200px;
   background-color: cornflowerblue;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.inner > * > * {
+  flex-grow: 1;
+}
+
+.inner > * > *:nth-of-type(2n) {
+  background-color: chartreuse;
 }
 
 .inner > *:nth-of-type(2n) {
