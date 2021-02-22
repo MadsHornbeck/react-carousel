@@ -1,0 +1,66 @@
+:root {
+  --red: #ff4136;
+  --green: #2ecc40;
+  --blue: #0074d9;
+  --light-blue: #7fdbff;
+}
+
+html {
+  font-size: clamp(1rem, 3vmin, 2rem);
+}
+
+body {
+  margin: 0;
+}
+
+* {
+  font-family: monospace;
+}
+
+h1,
+h2,
+h3 {
+  font-family: sans-serif;
+}
+
+.container > * {
+  width: 80vw;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+@media (max-aspect-ratio: 1 / 2) {
+  .container > * {
+    width: auto;
+    max-width: 100%;
+    margin: 0 10vw;
+  }
+}
+
+.container > * + * {
+  margin-top: 2em;
+}
+
+button {
+  cursor: pointer;
+}
+
+button[type="submit"] {
+  font-size: 0.8em;
+  background-color: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+button[type="submit"]:hover,
+button.active {
+  background-color: var(--blue);
+  border-color: var(--blue);
+  color: white;
+}
+
+button:hover {
+  background-color: var(--light-blue);
+  border-color: var(--light-blue);
+  color: black;
+}
