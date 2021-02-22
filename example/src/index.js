@@ -32,7 +32,7 @@ function Test() {
         free={free}
         gap={gap}
       >
-        {Array.from({ length: 6 }).map((_, i) => (
+        {Array.from({ length: 9 }).map((_, i) => (
           <div key={i}>{i}</div>
         ))}
       </Carousel>

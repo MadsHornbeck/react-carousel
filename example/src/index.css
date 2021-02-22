@@ -64,3 +64,25 @@ button:hover {
   border-color: var(--light-blue);
   color: black;
 }
+
+.inner {
+  transition: transform 300ms ease;
+}
+
+.inner > * {
+  height: 200px;
+  background-color: cornflowerblue;
+}
+
+.inner > *:nth-of-type(2n) {
+  background-color: pink;
+  grid-column: span 2;
+}
+
+.inner > *:first-child {
+  background-color: green;
+}
+
+.inner > *:last-child {
+  background-color: red;
+}

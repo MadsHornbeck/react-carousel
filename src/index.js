@@ -72,7 +72,7 @@ const Carousel = React.forwardRef(
     return React.createElement(
       "div",
       {
-        className: `outer ${className}`,
+        className: `hornbeck-carousel ${className}`,
         style: {
           "--gap": gap,
           "--offset": `${offset} / ${items}`,

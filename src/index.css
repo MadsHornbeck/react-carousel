@@ -1,12 +1,12 @@
-.outer {
+.hornbeck-carousel {
   overflow-x: hidden;
 }
 
-.outer > div {
+.hornbeck-carousel > div {
   margin: 0 calc(var(--gap) / -2);
 }
 
-.inner {
+.hornbeck-carousel .inner {
   display: grid;
   width: calc(var(--slides) * 100%);
   grid-template-columns: repeat(var(--items), 1fr);
@@ -17,34 +17,11 @@
   /* transform: translateX(calc(-100% * var(--offset) / var(--width))); */
 }
 
-.inner {
-  transition: transform 300ms ease;
-}
-
-.inner > * {
+.hornbeck-carousel .inner > * {
   margin: 0 calc(var(--gap) / 2);
   transform: translateX(calc(var(--shift) * 100% + var(--shift) * var(--gap)));
 }
 
 body.overflow-hidden {
   overflow: hidden;
-}
-
-/* USERSPACE */
-
-.inner > * {
-  height: 200px;
-  background-color: cornflowerblue;
-}
-
-.inner > *:nth-of-type(2n) {
-  background-color: pink;
-}
-
-.inner > *:first-child {
-  background-color: green;
-}
-
-.inner > *:last-child {
-  background-color: red;
 }
