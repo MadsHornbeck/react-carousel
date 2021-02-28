@@ -72,16 +72,6 @@ button:hover {
 .inner > * {
   height: 200px;
   background-color: cornflowerblue;
-  display: flex;
-  justify-content: space-evenly;
-}
-
-.inner > * > * {
-  flex-grow: 1;
-}
-
-.inner > * > *:nth-of-type(2n) {
-  background-color: chartreuse;
 }
 
 .inner > *:nth-of-type(2n) {
@@ -96,3 +86,27 @@ button:hover {
 .inner > *:last-child {
   background-color: red;
 }
+
+/*
+.inner > *:nth-child(1) {
+  grid-column: span 1;
+}
+.inner > *:nth-child(2) {
+  grid-column: span 1;
+}
+.inner > *:nth-child(3) {
+  grid-column: span 1;
+}
+.inner > *:nth-child(4) {
+  grid-column: span 1;
+}
+.inner > *:nth-child(5) {
+  grid-column: span 1;
+}
+.inner > *:nth-child(6) {
+  grid-column: span 1;
+}
+.inner > *:nth-child(7) {
+  grid-column: span 1;
+}
+*/

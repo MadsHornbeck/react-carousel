@@ -32,10 +32,8 @@ function Test() {
         free={free}
         gap={gap}
       >
-        {Array.from({ length: 9 }).map((_, i) => (
-          <div key={i}>
-            <div>{i}</div>
-          </div>
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i}>{i}</div>
         ))}
       </Carousel>
       <button onClick={() => ref.current.prev()}>Prev</button>

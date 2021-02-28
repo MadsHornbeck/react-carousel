@@ -57,7 +57,7 @@ const Inputs = React.forwardRef((_, ref) => {
           Items per slide:
           <input
             type="number"
-            onChange={(e) => setItemsPerSlide(e.currentTarget.value)}
+            onChange={(e) => setItemsPerSlide(e.currentTarget.valueAsNumber)}
             value={itemsPerSlide}
             min="1"
           />

@@ -11,4 +11,12 @@
 - revolve (default: false) - Whether or not the carousel should wrap around when the end is reached.
 - gap (default: "") - the gap between items. NB only use absolute distance units (px, rem, etc.) as relative units might make the slides not align correctly.
 
-### return
+### ref
+
+Adding a ref to the `Carousel` component will expose the following data and functions:
+
+- next - () -> void - go to the next item
+- prev - () -> void - go to the previous item
+- changePosition - delta -> void - goes delta distance, pass negative value to go backwards
+- setPosition - index -> void - set `index` to the current item
+- index - Number - the current items index

@@ -1,38 +1,44 @@
 import React from "react";
 
 import "./index.css";
+import useEvents from "./useEvents";
+import { toIndex, sum, calcItemsOnLastSlide } from "./util";
 
-// TODO: rename itemsPerSlide
+// TODO: maybe rename itemsPerSlide
 // TODO: maybe rename free
-// TODO: handle case where items have grid-column of > span 1
 const Carousel = React.forwardRef(
   ({ children, className, revolve, itemsPerSlide, gap, free }, ref) => {
     const r = React.useRef();
-    const [active, setActive] = React.useState(0);
+    const [position, setPosition] = React.useState(0);
+    const length = children.length;
 
-    const [asdf, setAsdf] = React.useState([]);
-    const [items, setItems] = React.useState(children.length);
-
+    // TODO: maybe use useMemo instead of useEffect and useState
+    const [itemSizes, setItemSizes] = React.useState([]);
     React.useEffect(() => {
       const i = [...r.current.children]
         .map((n) => window.getComputedStyle(n)["grid-column-start"])
         .map((s) => Number(s.split(" ")[1]) || 1);
-      setAsdf(i);
-      setItems(i.reduce((a, b) => a + b, 0));
+      setItemSizes(i);
     }, [children]);
 
-    React.useEffect(() => {
-      // reset to integer position when free is toggled off.
-      if (!free) setActive(Math.round);
-    }, [free]);
+    const itemCount = React.useMemo(() => sum(itemSizes) || length, [
+      length,
+      itemSizes,
+    ]);
 
+    const itemsOnLastSlide = React.useMemo(
+      () => calcItemsOnLastSlide(itemSizes, itemsPerSlide),
+      [itemSizes, itemsPerSlide]
+    );
+
+    const max = length - itemsOnLastSlide;
     const changePosition = React.useCallback(
       (v) => {
-        setActive((a) =>
-          revolve ? a + v : Math.max(0, Math.min(a + v, items - itemsPerSlide))
+        setPosition((a) =>
+          revolve ? a + v : Math.max(0, Math.min(a + v, max))
         );
       },
-      [items, itemsPerSlide, revolve]
+      [max, revolve]
     );
 
     const { events, moveOffset, isMoving } = useEvents({
@@ -41,8 +47,26 @@ const Carousel = React.forwardRef(
       itemsPerSlide,
     });
 
-    const offset = active - moveOffset * itemsPerSlide;
-    const index = ((offset % items) + items) % items;
+    const isOnLastSlide = !revolve && position === max;
+    // TODO: find better name than `endAlignment`
+    const endAlignment =
+      isOnLastSlide && itemsPerSlide - sum(itemSizes.slice(-itemsOnLastSlide));
+
+    const active =
+      sum(itemSizes.slice(0, toIndex(position, length))) - endAlignment;
+
+    const page = Math.floor(position / length);
+    const offset = active - moveOffset * itemsPerSlide + page * itemCount;
+
+    // TODO: find a better way to get the correct index.
+    const itemSizeSums = React.useMemo(
+      () =>
+        itemSizes.reduce((a, b) => a.concat(b + a[a.length - 1]), [0]).slice(1),
+      [itemSizes]
+    );
+    const dist = Math.round(toIndex(offset, itemCount));
+    const id = itemSizeSums.findIndex((a) => dist < a);
+    const index = id && (~id ? id : length - 1);
 
     React.useImperativeHandle(
       ref,
@@ -51,28 +75,31 @@ const Carousel = React.forwardRef(
         index,
         next: () => changePosition(1),
         prev: () => changePosition(-1),
+        setPosition,
       }),
       [changePosition, index]
     );
 
     React.useEffect(() => {
       if (!revolve) return;
-      const page = Math.floor(offset / items);
+      const page = Math.floor(offset / itemCount);
       const churds = [...r.current.children];
       churds.forEach((child, i) => {
         const diff = index - i;
-        const a = diff >= items - itemsPerSlide;
-        const b = items > itemsPerSlide;
-        const c = Math.abs(diff) === items - 1;
-        const shift = (a || (b && c)) * Math.sign(diff);
-        child.style.setProperty("--shift", (page + shift) * items);
+        const moveHead = diff >= length - itemsPerSlide;
+        const moveTail = Math.abs(diff) === length - 1;
+        const shift = (moveHead || moveTail) * Math.sign(diff);
+        child.style.setProperty(
+          "--shift",
+          `${(page + shift) * itemCount} / ${itemSizes[i]}`
+        );
       });
       return () => {
         churds.forEach((child) => {
           child.style.removeProperty("--shift");
         });
       };
-    }, [index, items, itemsPerSlide, offset, revolve]);
+    }, [length, index, itemCount, itemSizes, itemsPerSlide, offset, revolve]);
 
     return React.createElement(
       "div",
@@ -80,9 +107,9 @@ const Carousel = React.forwardRef(
         className: `hornbeck-carousel ${className}`,
         style: {
           "--gap": gap,
-          "--offset": `${offset} / ${items}`,
-          "--slides": `${items} / ${itemsPerSlide}`,
-          "--items": items,
+          "--offset": `${offset} / ${itemCount}`,
+          "--slides": `${itemCount} / ${itemsPerSlide}`,
+          "--itemCount": itemCount,
         },
       },
       React.createElement(
@@ -117,71 +144,3 @@ Carousel.defaultProps = {
 Carousel.displayName = "Carousel";
 
 export default Carousel;
-
-function useEvents({ changePosition, free, itemsPerSlide }) {
-  const [initPos, setInitPos] = React.useState();
-  const [moveOffset, setMoveOffset] = React.useState(0);
-
-  const isMoving = initPos !== undefined;
-
-  const handleStart = (e) => {
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
-    setInitPos({ x, y });
-  };
-
-  const handleMove = (e) => {
-    // TODO: needs work, issues with scrolling on mobile.
-    // TODO: make the swiping experience better!
-    if (!isMoving) return;
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
-    const xDiff = x - initPos.x;
-    const verticalScroll = Math.abs(y - initPos.y) > Math.abs(xDiff);
-    if (
-      e.touches &&
-      verticalScroll &&
-      !document.body.classList.contains("overflow-hidden")
-    )
-      return;
-    setMoveOffset(xDiff / e.currentTarget.offsetWidth);
-
-    if (e.touches && !verticalScroll) {
-      document.body.classList.add("overflow-hidden");
-    }
-  };
-
-  const handleEnd = () => {
-    if (free) {
-      changePosition(-moveOffset * itemsPerSlide);
-    } else if (Math.abs(moveOffset) > 0.3) {
-      const i = Math.ceil(Math.abs(moveOffset)) * Math.sign(moveOffset);
-      changePosition(-i);
-    }
-    setInitPos(undefined);
-    setMoveOffset(0);
-    document.body.classList.remove("overflow-hidden");
-  };
-
-  const onKeyDown = (e) => {
-    const i = { ArrowLeft: -1, ArrowRight: 1 }[e.code] || 0;
-    changePosition(i);
-  };
-
-  const events = {
-    onKeyDown,
-    onMouseDown: handleStart,
-    onMouseLeave: handleEnd,
-    onMouseMove: handleMove,
-    onMouseUp: handleEnd,
-    onTouchEnd: handleEnd,
-    onTouchMove: handleMove,
-    onTouchStart: handleStart,
-  };
-
-  return {
-    events,
-    isMoving,
-    moveOffset,
-  };
-}

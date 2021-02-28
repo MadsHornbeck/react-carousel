@@ -9,7 +9,7 @@
 .hornbeck-carousel .inner {
   display: grid;
   width: calc(var(--slides) * 100%);
-  grid-template-columns: repeat(var(--items), 1fr);
+  grid-template-columns: repeat(var(--itemCount), 1fr);
   grid-auto-flow: column;
   transform: translateX(calc(-100% * var(--offset)));
 
@@ -19,7 +19,7 @@
 
 .hornbeck-carousel .inner > * {
   margin: 0 calc(var(--gap) / 2);
-  transform: translateX(calc(var(--shift) * 100% + var(--shift) * var(--gap)));
+  transform: translateX(calc(var(--shift) * (100% + var(--gap))));
 }
 
 body.overflow-hidden {
