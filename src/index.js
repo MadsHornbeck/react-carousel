@@ -87,7 +87,7 @@ const Carousel = React.forwardRef(
       churds.forEach((child, i) => {
         const diff = index - i;
         const moveHead = diff >= length - itemsPerSlide;
-        const moveTail = Math.abs(diff) === length - 1;
+        const moveTail = Math.abs(diff) >= max;
         const shift = (moveHead || moveTail) * Math.sign(diff);
         child.style.setProperty(
           "--shift",
@@ -99,7 +99,16 @@ const Carousel = React.forwardRef(
           child.style.removeProperty("--shift");
         });
       };
-    }, [length, index, itemCount, itemSizes, itemsPerSlide, offset, revolve]);
+    }, [
+      index,
+      itemCount,
+      itemSizes,
+      itemsPerSlide,
+      length,
+      max,
+      offset,
+      revolve,
+    ]);
 
     return React.createElement(
       "div",
