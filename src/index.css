@@ -12,16 +12,9 @@
   grid-template-columns: repeat(var(--itemCount), 1fr);
   grid-auto-flow: column;
   transform: translateX(calc(-100% * var(--offset)));
-
-  /* TODO: use this for whole pages only */
-  /* transform: translateX(calc(-100% * var(--offset) / var(--width))); */
 }
 
 .hornbeck-carousel .inner > * {
   margin: 0 calc(var(--gap) / 2);
   transform: translateX(calc(var(--shift) * (100% + var(--gap))));
-}
-
-body.overflow-hidden {
-  overflow: hidden;
 }

@@ -1,9 +1,17 @@
 import React from "react";
 
+const defaultPos = { x: 0, y: 0, dx: 0, dy: 0 };
+
 export default function useEvents({ changePosition, free, itemsPerSlide }) {
+  const ref = React.useRef({ offsetWidth: 1 });
   const [initPos, setInitPos] = React.useState();
-  const [moveOffset, setMoveOffset] = React.useState(0);
+  const [currPos, setCurrPos] = React.useState(defaultPos);
   const [freeOffset, setFreeOffset] = React.useState(0);
+
+  const isMoving = initPos !== undefined;
+  const moveOffset = isMoving
+    ? (currPos.x - initPos.x) / ref.current.offsetWidth
+    : 0;
 
   React.useEffect(() => {
     if (!free) {
@@ -13,47 +21,78 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
         return 0;
       });
     }
-  }, [changePosition, free, itemsPerSlide]);
+  }, [changePosition, free, isMoving, itemsPerSlide]);
 
-  const isMoving = initPos !== undefined;
+  React.useEffect(() => {
+    if (free && !isMoving) {
+      const trunc = Math.trunc(freeOffset);
+      const deci = freeOffset % 1;
+      console.log({ freeOffset, trunc, deci });
+    }
+  });
+
+  const prevTouch = React.useRef();
+  const getEventData = (e) => {
+    const { clientX: x, clientY: y, movementX, movementY } = e.touches
+      ? e.touches[0]
+      : e;
+    const dx = e.touches
+      ? x - (prevTouch.current ? prevTouch.current.x : x)
+      : movementX;
+    const dy = e.touches
+      ? y - (prevTouch.current ? prevTouch.current.y : y)
+      : movementY;
+    const rs = { x, y, dx, dy };
+    prevTouch.current = e.touches && rs;
+    return rs;
+  };
 
   const handleStart = (e) => {
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
-    setInitPos({ x, y });
+    const ed = getEventData(e);
+    setInitPos(ed);
+    setCurrPos(ed);
   };
 
-  const handleMove = (e) => {
-    // TODO: needs work, issues with scrolling on mobile.
-    // TODO: make the swiping experience better!
-    if (!isMoving) return;
-    const x = e.touches ? e.touches[0].clientX : e.clientX;
-    const y = e.touches ? e.touches[0].clientY : e.clientY;
-    const xDiff = x - initPos.x;
-    const verticalScroll = Math.abs(y - initPos.y) > Math.abs(xDiff);
-    if (
-      e.touches &&
-      verticalScroll &&
-      !document.body.classList.contains("overflow-hidden")
-    )
-      return;
-    setMoveOffset(xDiff / e.currentTarget.offsetWidth);
+  const [preventScroll, setPreventScroll] = React.useState(false);
+  React.useEffect(() => {
+    if (preventScroll || !prevTouch.current || !initPos) return;
 
-    if (e.touches && !verticalScroll) {
-      document.body.classList.add("overflow-hidden");
+    if (Math.abs(currPos.dy) > 10) {
+      setInitPos(undefined);
+    } else if (
+      prevTouch.current &&
+      (Math.abs(currPos.dx) > 20 ||
+        Math.abs(moveOffset) > 1 / (itemsPerSlide * 3))
+    ) {
+      setPreventScroll(true);
     }
-  };
+  }, [preventScroll, currPos, initPos, itemsPerSlide, moveOffset]);
+
+  const handleMove = React.useCallback(
+    (e) => {
+      if (!isMoving) return;
+      if (preventScroll) e.preventDefault();
+      const curr = getEventData(e);
+      setCurrPos(curr);
+    },
+    [preventScroll, isMoving]
+  );
 
   const handleEnd = () => {
     if (free) {
       setFreeOffset((m) => m + moveOffset);
-    } else if (Math.abs(moveOffset) > 0.3) {
-      const i = Math.ceil(Math.abs(moveOffset)) * Math.sign(moveOffset);
+    } else if (
+      Math.abs(currPos.dx) > 10 ||
+      Math.abs(moveOffset) > 1 / (itemsPerSlide * 3)
+    ) {
+      const i =
+        Math.ceil(Math.abs(moveOffset) * itemsPerSlide) * Math.sign(moveOffset);
       changePosition(-i);
     }
     setInitPos(undefined);
-    setMoveOffset(0);
-    document.body.classList.remove("overflow-hidden");
+    setCurrPos(defaultPos);
+    prevTouch.current = undefined;
+    setPreventScroll(false);
   };
 
   const onKeyDown = (e) => {
@@ -61,14 +100,24 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
     changePosition(i);
   };
 
+  // FIXME: required as react onTouchMove doesn't respect preventDefault
+  React.useEffect(() => {
+    const r = ref.current;
+    r.addEventListener("touchmove", handleMove);
+    return () => {
+      r.removeEventListener("touchmove", handleMove);
+    };
+  }, [handleMove]);
+
   const events = {
+    ref,
     onKeyDown,
     onMouseDown: handleStart,
     onMouseLeave: handleEnd,
     onMouseMove: handleMove,
     onMouseUp: handleEnd,
     onTouchEnd: handleEnd,
-    onTouchMove: handleMove,
+    // onTouchMove: handleMove,
     onTouchStart: handleStart,
   };
 
