@@ -7,7 +7,7 @@ import { toIndex, sum, calcItemsOnLastSlide } from "./util";
 // TODO: maybe rename itemsPerSlide
 // TODO: maybe rename free
 const Carousel = React.forwardRef(
-  ({ children, className, revolve, itemsPerSlide, gap, free }, ref) => {
+  ({ children, revolve, itemsPerSlide, gap, free, ...rest }, ref) => {
     const r = React.useRef();
     const [position, setPosition] = React.useState(0);
     const length = children.length;
@@ -113,8 +113,10 @@ const Carousel = React.forwardRef(
     return React.createElement(
       "div",
       {
-        className: `hornbeck-carousel ${className}`,
+        ...rest,
+        className: `hornbeck-carousel ${rest.className}`,
         style: {
+          ...rest.style,
           "--gap": gap,
           "--offset": `${offset} / ${itemCount}`,
           "--slides": `${itemCount} / ${itemsPerSlide}`,

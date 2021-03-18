@@ -12,7 +12,10 @@ const Inputs = React.forwardRef((_, ref) => {
       free,
       revolve,
       gap: `${gap}rem`,
-      itemsPerSlide,
+      itemsPerSlide:
+        Number.isFinite(+itemsPerSlide) && itemsPerSlide > 0
+          ? itemsPerSlide
+          : 1,
     }),
     [free, gap, itemsPerSlide, revolve]
   );
@@ -46,7 +49,7 @@ const Inputs = React.forwardRef((_, ref) => {
           Gap:
           <input
             type="number"
-            onChange={(e) => setGap(e.currentTarget.valueAsNumber)}
+            onChange={(e) => setGap(e.currentTarget.value)}
             value={gap}
             min="0"
           />
@@ -57,7 +60,7 @@ const Inputs = React.forwardRef((_, ref) => {
           Items per slide:
           <input
             type="number"
-            onChange={(e) => setItemsPerSlide(e.currentTarget.valueAsNumber)}
+            onChange={(e) => setItemsPerSlide(e.currentTarget.value)}
             value={itemsPerSlide}
             min="1"
           />

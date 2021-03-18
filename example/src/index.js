@@ -32,12 +32,13 @@ function Test() {
         free={free}
         gap={gap}
       >
-        {Array.from({ length: 7 }).map((_, i) => (
+        {Array.from({ length: 7 }, (_, i) => (
           <div key={i}>{i}</div>
         ))}
       </Carousel>
       <button onClick={() => ref.current.prev()}>Prev</button>
       <button onClick={() => ref.current.next()}>Next</button>
+      <div style={{ height: "200vh" }} />
     </div>
   );
 }

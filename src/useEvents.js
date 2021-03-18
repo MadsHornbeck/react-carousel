@@ -1,5 +1,7 @@
 import React from "react";
 
+import useScrollLock from "./useScrollLock";
+
 const defaultPos = { x: 0, y: 0, dx: 0, dy: 0 };
 
 export default function useEvents({ changePosition, free, itemsPerSlide }) {
@@ -46,6 +48,7 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
     prevTouch.current = e.touches && rs;
     return rs;
   };
+  const isTouch = !!prevTouch.current;
 
   const handleStart = (e) => {
     const ed = getEventData(e);
@@ -55,28 +58,24 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
 
   const [preventScroll, setPreventScroll] = React.useState(false);
   React.useEffect(() => {
-    if (preventScroll || !prevTouch.current || !initPos) return;
+    if (!isTouch || preventScroll || !initPos) return;
 
     if (Math.abs(currPos.dy) > 10) {
       setInitPos(undefined);
     } else if (
-      prevTouch.current &&
-      (Math.abs(currPos.dx) > 20 ||
-        Math.abs(moveOffset) > 1 / (itemsPerSlide * 3))
+      Math.abs(currPos.dx) > 10 ||
+      Math.abs(moveOffset) > 1 / (itemsPerSlide * 3)
     ) {
       setPreventScroll(true);
     }
-  }, [preventScroll, currPos, initPos, itemsPerSlide, moveOffset]);
+  }, [currPos, initPos, isTouch, itemsPerSlide, moveOffset, preventScroll]);
 
-  const handleMove = React.useCallback(
-    (e) => {
-      if (!isMoving) return;
-      if (preventScroll) e.preventDefault();
-      const curr = getEventData(e);
-      setCurrPos(curr);
-    },
-    [preventScroll, isMoving]
-  );
+  useScrollLock(preventScroll);
+
+  const handleMove = (e) => {
+    if (!isMoving) return;
+    setCurrPos(getEventData(e));
+  };
 
   const handleEnd = () => {
     if (free) {
@@ -91,23 +90,14 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
     }
     setInitPos(undefined);
     setCurrPos(defaultPos);
-    prevTouch.current = undefined;
     setPreventScroll(false);
+    prevTouch.current = undefined;
   };
 
   const onKeyDown = (e) => {
     const i = { ArrowLeft: -1, ArrowRight: 1 }[e.code] || 0;
     changePosition(i);
   };
-
-  // FIXME: required as react onTouchMove doesn't respect preventDefault
-  React.useEffect(() => {
-    const r = ref.current;
-    r.addEventListener("touchmove", handleMove);
-    return () => {
-      r.removeEventListener("touchmove", handleMove);
-    };
-  }, [handleMove]);
 
   const events = {
     ref,
@@ -117,7 +107,7 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
     onMouseMove: handleMove,
     onMouseUp: handleEnd,
     onTouchEnd: handleEnd,
-    // onTouchMove: handleMove,
+    onTouchMove: handleMove,
     onTouchStart: handleStart,
   };
 
