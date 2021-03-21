@@ -1,6 +1,6 @@
 import React from "react";
 
-import useScrollLock from "./useScrollLock";
+import { useScrollLock } from "@hornbeck/scroll-lock";
 
 const defaultPos = { x: 0, y: 0, dx: 0, dy: 0 };
 

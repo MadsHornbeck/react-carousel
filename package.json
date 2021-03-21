@@ -1,6 +1,6 @@
 {
   "name": "@hornbeck/react-carousel",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "author": {
     "name": "Mads Hornbeck",
@@ -26,6 +26,9 @@
     "eslint-plugin-react": "7.20.0",
     "eslint-plugin-react-hooks": "4.0.4",
     "prettier": "2.0.5"
+  },
+  "dependencies": {
+    "@hornbeck/scroll-lock": "1.0.3"
   },
   "peerDependencies": {
     "react": "^16.8.0"
