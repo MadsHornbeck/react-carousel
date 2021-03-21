@@ -4,7 +4,6 @@ import "./index.css";
 import useEvents from "./useEvents";
 import { toIndex, sum, calcItemsOnLastSlide } from "./util";
 
-// TODO: maybe rename itemsPerSlide
 // TODO: maybe rename free
 const Carousel = React.forwardRef(
   ({ center, children, revolve, itemsPerSlide, gap, free, ...rest }, ref) => {
@@ -22,10 +21,12 @@ const Carousel = React.forwardRef(
       setItemSizes(i);
     }, [children]);
 
-    const itemCount = React.useMemo(() => sum(itemSizes) || length, [
-      length,
-      itemSizes,
-    ]);
+    const itemSizeSums = React.useMemo(
+      () =>
+        itemSizes.reduce((a, b) => a.concat(b + a[a.length - 1]), [0]).slice(1),
+      [itemSizes]
+    );
+    const itemCount = itemSizeSums[itemSizeSums.length - 1] || length;
 
     const itemsOnLastSlide = React.useMemo(
       () => calcItemsOnLastSlide(itemSizes, ips),
@@ -48,7 +49,6 @@ const Carousel = React.forwardRef(
     });
 
     const isOnLastSlide = !revolve && position === max;
-    // TODO: find better name than `endAlignment`
     const endAlignment =
       isOnLastSlide && ips - sum(itemSizes.slice(-itemsOnLastSlide));
 
@@ -59,11 +59,6 @@ const Carousel = React.forwardRef(
     const offset = active - moveOffset * ips + page * itemCount;
 
     // TODO: find a better way to get the correct index.
-    const itemSizeSums = React.useMemo(
-      () =>
-        itemSizes.reduce((a, b) => a.concat(b + a[a.length - 1]), [0]).slice(1),
-      [itemSizes]
-    );
     const dist = Math.round(toIndex(offset, itemCount));
     const id = itemSizeSums.findIndex((a) => dist < a);
     const index = id && (~id ? id : length - 1);
@@ -136,14 +131,8 @@ const Carousel = React.forwardRef(
   }
 );
 
-// TODO: add prop-types.
-
 Carousel.defaultProps = {
-  className: "",
-  free: false,
-  gap: "0px",
   itemsPerSlide: 1,
-  revolve: false,
 };
 
 Carousel.displayName = "Carousel";

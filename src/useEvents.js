@@ -18,20 +18,11 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
   React.useEffect(() => {
     if (!free) {
       setFreeOffset((m) => {
-        // TODO: maybe reconsider this way of doing it.
         changePosition(Math.round(-m * itemsPerSlide));
         return 0;
       });
     }
   }, [changePosition, free, isMoving, itemsPerSlide]);
-
-  React.useEffect(() => {
-    if (free && !isMoving) {
-      const trunc = Math.trunc(freeOffset);
-      const deci = freeOffset % 1;
-      console.log({ freeOffset, trunc, deci });
-    }
-  });
 
   const prevTouch = React.useRef();
   const getEventData = (e) => {
