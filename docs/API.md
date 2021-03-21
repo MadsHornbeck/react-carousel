@@ -10,6 +10,7 @@
 - itemsPerSlide (default: 1) - how many items should be shown per slide. One slides is what is shown at any one time.
 - revolve (default: false) - Whether or not the carousel should wrap around when the end is reached.
 - gap (default: "") - the gap between items. NB only use absolute distance units (px, rem, etc.) as relative units might make the slides not align correctly.
+- center (default: false) - center the active slide
 
 ### ref
 

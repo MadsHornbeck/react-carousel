@@ -20,17 +20,18 @@ ReactDOM.render(
 function Test() {
   const [inputs, setInputs] = React.useState({});
   const ref = React.useRef();
-  const { free, revolve, gap, itemsPerSlide } = inputs;
+  const { center, free, gap, itemsPerSlide, revolve } = inputs;
   return (
     <div>
       <Inputs ref={setInputs} />
       <hr />
       <Carousel
         ref={ref}
-        itemsPerSlide={itemsPerSlide}
-        revolve={revolve}
+        center={center}
         free={free}
         gap={gap}
+        itemsPerSlide={itemsPerSlide}
+        revolve={revolve}
       >
         {Array.from({ length: 7 }, (_, i) => (
           <div key={i}>{i}</div>

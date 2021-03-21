@@ -7,7 +7,8 @@ import { toIndex, sum, calcItemsOnLastSlide } from "./util";
 // TODO: maybe rename itemsPerSlide
 // TODO: maybe rename free
 const Carousel = React.forwardRef(
-  ({ children, revolve, itemsPerSlide, gap, free, ...rest }, ref) => {
+  ({ center, children, revolve, itemsPerSlide, gap, free, ...rest }, ref) => {
+    const ips = center ? Math.ceil(itemsPerSlide / 2) : itemsPerSlide;
     const r = React.useRef();
     const [position, setPosition] = React.useState(0);
     const length = children.length;
@@ -27,16 +28,15 @@ const Carousel = React.forwardRef(
     ]);
 
     const itemsOnLastSlide = React.useMemo(
-      () => calcItemsOnLastSlide(itemSizes, itemsPerSlide),
-      [itemSizes, itemsPerSlide]
+      () => calcItemsOnLastSlide(itemSizes, ips),
+      [itemSizes, ips]
     );
 
     const max = length - itemsOnLastSlide;
     const changePosition = React.useCallback(
       (v) => {
-        setPosition((a) =>
-          revolve ? a + v : Math.max(0, Math.min(a + v, max))
-        );
+        const clamp = (x) => (revolve ? x : Math.max(0, Math.min(x, max)));
+        setPosition((a) => clamp(a + v));
       },
       [max, revolve]
     );
@@ -44,19 +44,19 @@ const Carousel = React.forwardRef(
     const { events, moveOffset, isMoving } = useEvents({
       changePosition,
       free,
-      itemsPerSlide,
+      itemsPerSlide: ips,
     });
 
     const isOnLastSlide = !revolve && position === max;
     // TODO: find better name than `endAlignment`
     const endAlignment =
-      isOnLastSlide && itemsPerSlide - sum(itemSizes.slice(-itemsOnLastSlide));
+      isOnLastSlide && ips - sum(itemSizes.slice(-itemsOnLastSlide));
 
     const active =
       sum(itemSizes.slice(0, toIndex(position, length))) - endAlignment;
 
     const page = Math.floor(position / length);
-    const offset = active - moveOffset * itemsPerSlide + page * itemCount;
+    const offset = active - moveOffset * ips + page * itemCount;
 
     // TODO: find a better way to get the correct index.
     const itemSizeSums = React.useMemo(
@@ -86,7 +86,7 @@ const Carousel = React.forwardRef(
       const churds = [...r.current.children];
       churds.forEach((child, i) => {
         const diff = index - i;
-        const moveHead = diff >= length - itemsPerSlide;
+        const moveHead = diff >= length - ips;
         const moveTail = Math.abs(diff) >= max;
         const shift = (moveHead || moveTail) * Math.sign(diff);
         child.style.setProperty(
@@ -99,28 +99,22 @@ const Carousel = React.forwardRef(
           child.style.removeProperty("--shift");
         });
       };
-    }, [
-      index,
-      itemCount,
-      itemSizes,
-      itemsPerSlide,
-      length,
-      max,
-      offset,
-      revolve,
-    ]);
+    }, [index, itemCount, itemSizes, ips, length, max, offset, revolve]);
 
     return React.createElement(
       "div",
       {
         ...rest,
-        className: `hornbeck-carousel ${rest.className}`,
+        className: ["hornbeck-carousel", center && "center", rest.className]
+          .filter(Boolean)
+          .join(" "),
         style: {
           ...rest.style,
           "--gap": gap,
           "--offset": `${offset} / ${itemCount}`,
-          "--slides": `${itemCount} / ${itemsPerSlide}`,
+          "--slides": `${itemCount} / ${ips}`,
           "--itemCount": itemCount,
+          "--center": `${Math.floor(itemsPerSlide / 2)} / ${itemsPerSlide}`,
         },
       },
       React.createElement(

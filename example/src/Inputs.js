@@ -1,23 +1,25 @@
 import React from "react";
 
 const Inputs = React.forwardRef((_, ref) => {
-  const [free, setFree] = React.useState(false);
+  const [free, setFree] = React.useState(0);
   const [revolve, setRevolve] = React.useState(false);
+  const [center, setCenter] = React.useState(false);
   const [gap, setGap] = React.useState(0);
   const [itemsPerSlide, setItemsPerSlide] = React.useState(3);
 
   React.useImperativeHandle(
     ref,
     () => ({
+      center,
       free,
-      revolve,
       gap: `${gap}rem`,
       itemsPerSlide:
         Number.isFinite(+itemsPerSlide) && itemsPerSlide > 0
           ? itemsPerSlide
           : 1,
+      revolve,
     }),
-    [free, gap, itemsPerSlide, revolve]
+    [center, free, gap, itemsPerSlide, revolve]
   );
 
   return (
@@ -41,6 +43,17 @@ const Inputs = React.forwardRef((_, ref) => {
             onChange={(e) => setRevolve(e.currentTarget.checked)}
             value={revolve}
             checked={revolve}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          Center:
+          <input
+            type="checkbox"
+            onChange={(e) => setCenter(e.currentTarget.checked)}
+            value={center}
+            checked={center}
           />
         </label>
       </div>

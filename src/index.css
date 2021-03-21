@@ -18,3 +18,7 @@
   margin: 0 calc(var(--gap) / 2);
   transform: translateX(calc(var(--shift) * (100% + var(--gap))));
 }
+
+.hornbeck-carousel.center {
+  padding-left: calc((100% + var(--gap)) * var(--center));
+}
