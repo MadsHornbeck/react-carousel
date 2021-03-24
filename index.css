@@ -1,0 +1,55 @@
+.hornbeck-carousel {
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hornbeck-carousel.vertical {
+  max-height: var(--carousel-height);
+}
+
+.hornbeck-carousel > div {
+  height: 100%;
+}
+
+.inner {
+  height: 100%;
+  margin: 0 calc(var(--gap) / -2);
+}
+
+.vertical .inner {
+  margin: calc(var(--gap) / -2) 0;
+}
+
+.hornbeck-carousel.horizontal .inner {
+  display: grid;
+  width: calc(var(--slides) * 100%);
+  grid-template-columns: repeat(var(--itemCount), 1fr);
+  grid-auto-flow: column;
+  transform: translateX(calc(-100% * var(--offset)));
+}
+
+.hornbeck-carousel.vertical .inner {
+  display: grid;
+  height: calc(var(--slides) * 100%);
+  grid-template-rows: repeat(var(--itemCount), 1fr);
+  grid-auto-flow: row;
+  transform: translateY(calc(-100% * var(--offset)));
+}
+
+.hornbeck-carousel.horizontal .inner > * {
+  margin: 0 calc(var(--gap) / 2);
+  transform: translateX(calc(var(--shift) * (100% + var(--gap))));
+}
+
+.hornbeck-carousel.vertical .inner > * {
+  margin: calc(var(--gap) / 2) 0;
+  transform: translateY(calc(var(--shift) * (100% + var(--gap))));
+}
+
+.hornbeck-carousel.center.horizontal {
+  padding-left: calc((100% + var(--gap)) * var(--center));
+}
+
+.hornbeck-carousel.center.vertical {
+  padding-top: calc((var(--carousel-height) + var(--gap)) * var(--center));
+}

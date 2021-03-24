@@ -65,18 +65,32 @@ button:hover {
   color: black;
 }
 
+.hornbeck-carousel.horizontal {
+  height: 200px;
+}
+.hornbeck-carousel.vertical {
+  height: 600px;
+}
+
 .inner {
   transition: transform 300ms ease;
 }
 
 .inner > * {
-  height: 200px;
+  min-height: 200px;
   background-color: cornflowerblue;
 }
 
 .inner > *:nth-of-type(2n) {
   background-color: pink;
+}
+
+.horizontal .inner > *:nth-of-type(2n + 1) {
   grid-column: span 2;
+}
+
+.vertical .inner > *:nth-of-type(2n) {
+  grid-row: span 2;
 }
 
 .inner > *:first-child {

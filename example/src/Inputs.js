@@ -4,6 +4,7 @@ const Inputs = React.forwardRef((_, ref) => {
   const [free, setFree] = React.useState(0);
   const [revolve, setRevolve] = React.useState(false);
   const [center, setCenter] = React.useState(false);
+  const [vertical, setVertical] = React.useState(1);
   const [gap, setGap] = React.useState(0);
   const [itemsPerSlide, setItemsPerSlide] = React.useState(3);
 
@@ -18,8 +19,9 @@ const Inputs = React.forwardRef((_, ref) => {
           ? itemsPerSlide
           : 1,
       revolve,
+      vertical,
     }),
-    [center, free, gap, itemsPerSlide, revolve]
+    [center, free, gap, itemsPerSlide, revolve, vertical]
   );
 
   return (
@@ -54,6 +56,17 @@ const Inputs = React.forwardRef((_, ref) => {
             onChange={(e) => setCenter(e.currentTarget.checked)}
             value={center}
             checked={center}
+          />
+        </label>
+      </div>
+      <div>
+        <label>
+          vertical:
+          <input
+            type="checkbox"
+            onChange={(e) => setVertical(e.currentTarget.checked)}
+            value={vertical}
+            checked={vertical}
           />
         </label>
       </div>

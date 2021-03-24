@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
+import "@hornbeck/react-carousel/index.css";
 
 import Carousel from "@hornbeck/react-carousel";
 
@@ -20,7 +21,7 @@ ReactDOM.render(
 function Test() {
   const [inputs, setInputs] = React.useState({});
   const ref = React.useRef();
-  const { center, free, gap, itemsPerSlide, revolve } = inputs;
+  const { center, free, gap, itemsPerSlide, revolve, vertical } = inputs;
   return (
     <div>
       <Inputs ref={setInputs} />
@@ -32,11 +33,13 @@ function Test() {
         gap={gap}
         itemsPerSlide={itemsPerSlide}
         revolve={revolve}
+        vertical={vertical}
       >
         {Array.from({ length: 7 }, (_, i) => (
           <div key={i}>{i}</div>
         ))}
       </Carousel>
+      <hr />
       <button onClick={() => ref.current.prev()}>Prev</button>
       <button onClick={() => ref.current.next()}>Next</button>
       <div style={{ height: "200vh" }} />

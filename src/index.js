@@ -1,12 +1,14 @@
 import React from "react";
 
-import "./index.css";
 import useEvents from "./useEvents";
 import { toIndex, sum, calcItemsOnLastSlide } from "./util";
 
 // TODO: maybe rename free
 const Carousel = React.forwardRef(
-  ({ center, children, revolve, itemsPerSlide, gap, free, ...rest }, ref) => {
+  (
+    { center, children, free, gap, itemsPerSlide, revolve, vertical, ...rest },
+    ref
+  ) => {
     const ips = center ? Math.ceil(itemsPerSlide / 2) : itemsPerSlide;
     const r = React.useRef();
     const [position, setPosition] = React.useState(0);
@@ -15,11 +17,12 @@ const Carousel = React.forwardRef(
     // TODO: maybe use useMemo instead of useEffect and useState
     const [itemSizes, setItemSizes] = React.useState([]);
     React.useEffect(() => {
+      const asdf = vertical ? "row" : "column";
       const i = [...r.current.children]
-        .map((n) => window.getComputedStyle(n)["grid-column-start"])
+        .map((n) => window.getComputedStyle(n)[`grid-${asdf}-start`])
         .map((s) => Number(s.split(" ")[1]) || 1);
       setItemSizes(i);
-    }, [children]);
+    }, [children, vertical]);
 
     const itemSizeSums = React.useMemo(
       () =>
@@ -96,11 +99,23 @@ const Carousel = React.forwardRef(
       };
     }, [index, itemCount, itemSizes, ips, length, max, offset, revolve]);
 
+    const [carouselHeight, setCarouselHeight] = React.useState();
+    React.useLayoutEffect(() => {
+      setCarouselHeight(
+        vertical ? (r.current.clientHeight * itemsPerSlide) / itemCount : ""
+      );
+    }, [itemCount, itemsPerSlide, vertical]);
+
     return React.createElement(
       "div",
       {
         ...rest,
-        className: ["hornbeck-carousel", center && "center", rest.className]
+        className: [
+          "hornbeck-carousel",
+          center && "center",
+          vertical ? "vertical" : "horizontal",
+          rest.className,
+        ]
           .filter(Boolean)
           .join(" "),
         style: {
@@ -109,7 +124,9 @@ const Carousel = React.forwardRef(
           "--offset": `${offset} / ${itemCount}`,
           "--slides": `${itemCount} / ${ips}`,
           "--itemCount": itemCount,
-          "--center": `${Math.floor(itemsPerSlide / 2)} / ${itemsPerSlide}`,
+          "--center":
+            center && `${Math.floor(itemsPerSlide / 2)} / ${itemsPerSlide}`,
+          "--carousel-height": vertical && `${carouselHeight}px`,
         },
       },
       React.createElement(

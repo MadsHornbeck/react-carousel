@@ -17,7 +17,7 @@
     "react",
     "carousel"
   ],
-  "module": "src/index.js",
+  "module": "index.js",
   "sideEffects": false,
   "dependencies": {
     "@hornbeck/scroll-lock": "1.0.3"
@@ -26,6 +26,8 @@
     "react": "^16.8.0"
   },
   "files": [
+    "index.js",
+    "index.css",
     "src"
   ]
 }
