@@ -2,9 +2,9 @@ import React from "react";
 
 const Inputs = React.forwardRef((_, ref) => {
   const [free, setFree] = React.useState(0);
-  const [revolve, setRevolve] = React.useState(false);
-  const [center, setCenter] = React.useState(false);
-  const [vertical, setVertical] = React.useState(1);
+  const [revolve, setRevolve] = React.useState(0);
+  const [center, setCenter] = React.useState(0);
+  const [vertical, setVertical] = React.useState(0);
   const [gap, setGap] = React.useState(0);
   const [itemsPerSlide, setItemsPerSlide] = React.useState(3);
 

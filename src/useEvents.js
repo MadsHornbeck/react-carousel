@@ -11,9 +11,8 @@ export default function useEvents({ changePosition, free, itemsPerSlide }) {
   const [freeOffset, setFreeOffset] = React.useState(0);
 
   const isMoving = initPos !== undefined;
-  const moveOffset = isMoving
-    ? (currPos.x - initPos.x) / ref.current.offsetWidth
-    : 0;
+  const { offsetWidth } = ref.current;
+  const moveOffset = isMoving ? (currPos.x - initPos.x) / offsetWidth : 0;
 
   React.useEffect(() => {
     if (!free) {

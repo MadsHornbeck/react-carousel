@@ -7,10 +7,10 @@ import { toIndex, sum, calcItemsOnLastSlide } from "./util";
 const Carousel = React.forwardRef(
   (
     { center, children, free, gap, itemsPerSlide, revolve, vertical, ...rest },
-    ref
+    r
   ) => {
     const ips = center ? Math.ceil(itemsPerSlide / 2) : itemsPerSlide;
-    const r = React.useRef();
+    const ref = React.useRef();
     const [position, setPosition] = React.useState(0);
     const length = children.length;
 
@@ -18,7 +18,7 @@ const Carousel = React.forwardRef(
     const [itemSizes, setItemSizes] = React.useState([]);
     React.useEffect(() => {
       const asdf = vertical ? "row" : "column";
-      const i = [...r.current.children]
+      const i = [...ref.current.children]
         .map((n) => window.getComputedStyle(n)[`grid-${asdf}-start`])
         .map((s) => Number(s.split(" ")[1]) || 1);
       setItemSizes(i);
@@ -67,7 +67,7 @@ const Carousel = React.forwardRef(
     const index = id && (~id ? id : length - 1);
 
     React.useImperativeHandle(
-      ref,
+      r,
       () => ({
         changePosition,
         index,
@@ -81,7 +81,7 @@ const Carousel = React.forwardRef(
     React.useEffect(() => {
       if (!revolve) return;
       const page = Math.floor(offset / itemCount);
-      const churds = [...r.current.children];
+      const churds = [...ref.current.children];
       churds.forEach((child, i) => {
         const diff = index - i;
         const moveHead = diff >= length - ips;
@@ -102,9 +102,9 @@ const Carousel = React.forwardRef(
     const [carouselHeight, setCarouselHeight] = React.useState();
     React.useLayoutEffect(() => {
       setCarouselHeight(
-        vertical ? (r.current.clientHeight * itemsPerSlide) / itemCount : ""
+        vertical ? (ref.current.clientHeight * itemsPerSlide) / itemCount : ""
       );
-    }, [itemCount, itemsPerSlide, vertical]);
+    }, [gap, itemCount, itemsPerSlide, vertical]);
 
     return React.createElement(
       "div",
@@ -135,7 +135,7 @@ const Carousel = React.forwardRef(
         React.createElement(
           "div",
           {
-            ref: r,
+            ref,
             className: "inner",
             style: {
               transition: isMoving ? "none" : null,
