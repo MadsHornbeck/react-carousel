@@ -1,6 +1,6 @@
 {
   "name": "@hornbeck/react-carousel",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "license": "MIT",
   "author": {
     "name": "Mads Hornbeck",
@@ -17,17 +17,19 @@
     "react",
     "carousel"
   ],
-  "module": "index.js",
+  "main": "index.cjs",
+  "module": "src/index.js",
+  "style": "style.css",
   "sideEffects": false,
   "dependencies": {
-    "@hornbeck/scroll-lock": "1.0.3"
+    "@hornbeck/scroll-lock": "1.0.5"
   },
   "peerDependencies": {
     "react": "^16.8.0"
   },
   "files": [
-    "index.js",
-    "index.css",
+    "index.cjs",
+    "style.css",
     "src"
   ]
 }
