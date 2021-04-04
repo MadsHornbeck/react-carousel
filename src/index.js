@@ -1,7 +1,7 @@
 import React from "react";
 
 import useEvents from "./useEvents";
-import { toIndex, sum, calcItemsOnLastSlide } from "./util";
+import { calcItemsOnLastSlide, sum, toIndex, useIsoLayoutEffect } from "./util";
 
 // TODO: maybe rename free
 const Carousel = React.forwardRef(
@@ -100,7 +100,7 @@ const Carousel = React.forwardRef(
     }, [index, itemCount, itemSizes, ips, length, max, offset, revolve]);
 
     const [carouselHeight, setCarouselHeight] = React.useState();
-    React.useLayoutEffect(() => {
+    useIsoLayoutEffect(() => {
       setCarouselHeight(
         vertical ? (ref.current.clientHeight * itemsPerSlide) / itemCount : ""
       );

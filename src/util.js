@@ -1,3 +1,5 @@
+import React from "react";
+
 export const toIndex = (v, l) => ((v % l) + l) % l;
 
 export const sum = (arr) => arr.reduce((x, y) => x + y, 0);
@@ -17,3 +19,6 @@ export function calcItemsOnLastSlide(itemSizes, itemsPerSlide) {
 
   return itemsPerSlide;
 }
+
+export const useIsoLayoutEffect =
+  typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
